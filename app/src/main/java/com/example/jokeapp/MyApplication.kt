@@ -1,11 +1,9 @@
 package com.example.jokeapp
 
 import android.app.Application
-import com.example.jokeapp.data.BaseErrorResourceManager
-import com.example.jokeapp.data.Joke
-import com.example.jokeapp.data.JokeDownloadError
-import com.example.jokeapp.data.TestModel
+import com.example.jokeapp.data.*
 import com.example.jokeapp.viewmodel.ViewModel
+import com.google.gson.Gson
 
 class MyApplication: Application() {
 
@@ -13,6 +11,6 @@ class MyApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        viewModel = ViewModel(TestModel(BaseErrorResourceManager(this)))
+        viewModel = ViewModel(TestModel(BaseJokeLoader(Gson()), BaseErrorResourceManager(this)))
     }
 }

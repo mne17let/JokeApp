@@ -3,7 +3,7 @@ package com.example.jokeapp.data
 import com.example.jokeapp.data.Model
 import com.example.jokeapp.data.ResultCallback
 
-class TestModel(resourceManager: ErrorResourceManager): Model<Joke, JokeDownloadError> {
+class TestModel(private val loader: JokeLoader, private val resourceManager: ErrorResourceManager): Model<Joke, JokeDownloadError> {
 
     private var callback: ResultCallback<Joke, JokeDownloadError>? = null
 
@@ -14,25 +14,19 @@ class TestModel(resourceManager: ErrorResourceManager): Model<Joke, JokeDownload
     private val serverError = ServerError(resourceManager)
 
     override fun getJoke() {
+        loader.getJoke(object : DownloadCallback{
+            override fun returnSuccess(data: JokeModelJSON) {
+                callback?.onSuccess(data.toJoke())
+            }
 
-        val newThread = object : Thread(){
-            override fun run() {
-                Thread.sleep(3000)
-
-                when(count){
-                    0 -> callback?.onSuccess(Joke("Невероятный сетап", "Гениальный панч"))
-                    1 -> callback?.onFailed(serverError)
-                    2 -> callback?.onFailed(connectionError)
-                }
-                count++
-
-                if (count == 3){
-                    count = 0
+            override fun returnError(type: ErrorType) {
+                when(type){
+                    ErrorType.NO_CONNECTION -> callback?.onFailed(connectionError)
+                    ErrorType.OTHER -> callback?.onFailed(serverError)
                 }
             }
-        }
 
-        newThread.start()
+        })
     }
 
     override fun start(resultCallback: ResultCallback<Joke, JokeDownloadError>) {

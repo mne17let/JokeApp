@@ -1,5 +1,6 @@
 package com.example.jokeapp
 
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.example.jokeapp.viewmodel.TextCallback
 import com.example.jokeapp.viewmodel.ViewModel
+import java.io.InputStream
+import java.net.URL
+import java.net.URLConnection
+import java.sql.Connection
 
 class MainActivity : AppCompatActivity() {
 
