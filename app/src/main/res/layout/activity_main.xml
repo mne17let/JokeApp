@@ -14,18 +14,25 @@
         tools:text="Hello World!"
         android:textSize="20sp"
         android:gravity="center"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+
+        android:id="@+id/id_textview"/>
 
     <ProgressBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-        android:layout_margin="20dp"/>
+        android:layout_margin="20dp"
+        android:indeterminate="true"
+
+        android:id="@+id/id_progressbar"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Загрузить шутку"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+
+        android:id="@+id/id_button"/>
 
 </LinearLayout>
