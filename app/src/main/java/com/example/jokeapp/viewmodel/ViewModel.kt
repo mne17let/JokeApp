@@ -1,36 +1,40 @@
 package com.example.jokeapp.viewmodel
 
-import com.example.jokeapp.data.Joke
-import com.example.jokeapp.data.JokeDownloadError
-import com.example.jokeapp.data.Model
-import com.example.jokeapp.data.ResultCallback
+import com.example.jokeapp.data.*
+import com.example.jokeapp.data.repository.JokeRepository
+import com.example.jokeapp.data.repository.Repository
+import com.example.jokeapp.data.repository.ResultCallback
 
-class ViewModel(private val model: Model<Joke, JokeDownloadError>) {
+class ViewModel(private val repository: JokeRepository) {
 
-    private var textCallback: TextCallback? = null
+    private var jokeDataCallback: JokeDataCallback? = null
 
-    fun setTextCallBack(callback: TextCallback){
-        textCallback = callback
+    fun setTextCallBack(callback: JokeDataCallback){
+        jokeDataCallback = callback
     }
 
-    fun getJoke() = model.getJoke()
+    fun getJoke() = repository.getJoke()
 
-    fun start(textCallback: TextCallback){
-        this.textCallback = textCallback
+    fun start(jokeDataCallback: JokeDataCallback){
+        this.jokeDataCallback = jokeDataCallback
         val resultCallback = getResultCallback()
-        model.start(resultCallback)
+        repository.start(resultCallback)
     }
 
-    private fun getResultCallback(): ResultCallback<Joke, JokeDownloadError> {
-        val newResultCallback = object : ResultCallback<Joke, JokeDownloadError> {
-            override fun onSuccess(data: Joke) {
-                val jokeText = data.getJokeForUi()
-               textCallback?.updateText(jokeText)
-            }
+    fun chooseOnlyFavourite(isChecked: Boolean){
+        repository.changeDataSource(isChecked)
+    }
 
-            override fun onFailed(error: JokeDownloadError) {
-                val errorText = error.getErrorMessage()
-                textCallback?.updateText(errorText)
+    fun changeCurrentJokeStatus(){
+        repository.changeJokeStatus(getResultCallback())
+    }
+
+    private fun getResultCallback(): ResultCallback {
+        val newResultCallback = object : ResultCallback {
+            override fun onDownloadEnd(data: Joke) {
+                jokeDataCallback?.let {
+                    data.doMap(it)
+                }
             }
         }
 
@@ -38,7 +42,7 @@ class ViewModel(private val model: Model<Joke, JokeDownloadError>) {
     }
 
     fun clear(){
-        textCallback = null
-        model.clear()
+        jokeDataCallback = null
+        repository.clear()
     }
 }

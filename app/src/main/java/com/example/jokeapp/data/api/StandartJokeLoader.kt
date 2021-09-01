@@ -1,12 +1,13 @@
 package com.example.jokeapp.data
 
+import com.example.jokeapp.data.api.JokeModelJSON
 import com.google.gson.Gson
 import java.io.InputStreamReader
 import java.net.URL
 import java.net.URLConnection
 import java.net.UnknownHostException
 
-class BaseJokeLoader(private val gson: Gson): JokeLoader {
+class StandardJokeLoader(private val gson: Gson): OldJokeLoader {
     override fun getJoke(callback: DownloadCallback) {
         val newThread = object : Thread(){
             override fun run() {

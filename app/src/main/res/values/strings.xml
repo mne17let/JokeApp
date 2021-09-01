@@ -3,4 +3,5 @@
 
     <string name="text_error_no_connection">Ошибка выполнения. Проверьте подключение к интернету</string>
     <string name="text_error_server">Ошибка выполнения на сервере</string>
+    <string name="text_error_no_favourite_jokes">У вас нет добавленных в избранное шуток</string>
 </resources>

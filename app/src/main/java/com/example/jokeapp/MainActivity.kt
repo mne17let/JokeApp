@@ -1,25 +1,20 @@
 package com.example.jokeapp
 
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import com.example.jokeapp.viewmodel.TextCallback
+import android.widget.*
+import com.example.jokeapp.viewmodel.JokeDataCallback
 import com.example.jokeapp.viewmodel.ViewModel
-import java.io.InputStream
-import java.net.URL
-import java.net.URLConnection
-import java.sql.Connection
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var button: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var textView: TextView
+    private lateinit var checkBox: CheckBox
     private lateinit var viewModel: ViewModel
+    private lateinit var likeIconButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +24,16 @@ class MainActivity : AppCompatActivity() {
         setProgressBar()
         setButton()
         startViewModel()
+        setCheckBox()
+        setIconButton()
     }
 
     fun init(){
         button = findViewById(R.id.id_button)
         textView = findViewById(R.id.id_textview)
         progressBar = findViewById(R.id.id_progressbar)
+        checkBox = findViewById(R.id.id_checkbox)
+        likeIconButton = findViewById(R.id.id_like_button)
 
         val myApplication = application as MyApplication
         viewModel = myApplication.viewModel
@@ -53,13 +52,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startViewModel(){
-        val textCallback = object : TextCallback {
+        val textCallback = object : JokeDataCallback {
             override fun updateText(text: String) {
                 doOnUiThread(text)
+            }
+
+            override fun updateIcon(iconId: Int) {
+                likeIconButton.setImageResource(iconId)
             }
         }
 
         viewModel.start(textCallback)
+    }
+
+    fun setIconButton(){
+        likeIconButton.setOnClickListener {
+            viewModel.changeCurrentJokeStatus()
+        }
+    }
+
+    fun setCheckBox(){
+
+        val listener = object : CompoundButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                viewModel.chooseOnlyFavourite(isChecked)
+            }
+        }
+
+        checkBox.setOnCheckedChangeListener(listener)
     }
 
     override fun onDestroy() {

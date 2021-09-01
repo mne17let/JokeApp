@@ -17,3 +17,9 @@ class ServerError(private val resourceManager: ErrorResourceManager): JokeDownlo
         return resourceManager.getErrorString(R.string.text_error_server)
     }
 }
+
+class NoFavouriteJokeError(private val resourceManager: ErrorResourceManager): JokeDownloadError{
+    override fun getErrorMessage(): String {
+        return resourceManager.getErrorString(R.string.text_error_no_favourite_jokes)
+    }
+}

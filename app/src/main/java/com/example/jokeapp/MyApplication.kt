@@ -2,8 +2,13 @@ package com.example.jokeapp
 
 import android.app.Application
 import com.example.jokeapp.data.*
+import com.example.jokeapp.data.dataSources.CloudDataSource
+import com.example.jokeapp.data.dataSources.JokeCacheDataSource
+import com.example.jokeapp.data.dataSources.JokeCloudDataSource
+import com.example.jokeapp.data.repository.JokeRepository
 import com.example.jokeapp.viewmodel.ViewModel
-import com.google.gson.Gson
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MyApplication: Application() {
 
@@ -11,6 +16,19 @@ class MyApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        viewModel = ViewModel(TestModel(BaseJokeLoader(Gson()), BaseErrorResourceManager(this)))
+
+        val gson = GsonConverterFactory.create()
+
+        val retrofit = Retrofit
+            .Builder()
+            .baseUrl("http://vk.com")
+            .addConverterFactory(gson)
+            .build()
+
+        val retrofitJokeLoader = retrofit.create(RetrofitJokeLoader::class.java)
+
+        viewModel = ViewModel(JokeRepository(JokeCloudDataSource(retrofitJokeLoader),
+            JokeCacheDataSource(),
+            BaseErrorResourceManager(this)))
     }
 }

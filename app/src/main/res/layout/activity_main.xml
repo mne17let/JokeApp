@@ -8,15 +8,39 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
+    <CheckBox
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Hello World!"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_margin="5dp"
+        android:text="Показывать только любимые шутки"
 
-        android:id="@+id/id_textview"/>
+        android:id="@+id/id_checkbox"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Hello World!"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+
+            android:id="@+id/id_textview"/>
+
+        <ImageButton
+            android:background="@null"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:src="@android:drawable/ic_input_add"
+            android:layout_gravity="center_vertical"
+
+            android:id="@+id/id_like_button"/>
+
+    </LinearLayout>
 
     <ProgressBar
         android:layout_width="match_parent"
