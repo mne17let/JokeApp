@@ -5,6 +5,7 @@ import com.example.jokeapp.data.FavouriteJoke
 import com.example.jokeapp.data.Joke
 import com.example.jokeapp.data.StandardJoke
 import com.example.jokeapp.data.dataSources.CacheDataSource
+import com.example.jokeapp.data.dataSources.database.DataBaseJokeModel
 import com.google.gson.annotations.SerializedName
 
 
@@ -32,5 +33,14 @@ data class JokeModelJSON(
 
     fun toFailedJoke(): Joke{
         return FailedJoke("Ошибочная шутка")
+    }
+
+    fun toRealmJoke(): DataBaseJokeModel{
+        return DataBaseJokeModel().also {
+            it.id = id
+            it.type = type
+            it.setup = setup
+            it.punchline = punchline
+        }
     }
 }
