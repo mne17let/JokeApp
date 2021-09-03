@@ -2,7 +2,7 @@ package com.example.jokeapp.data
 
 import androidx.annotation.DrawableRes
 import com.example.jokeapp.R
-import com.example.jokeapp.data.dataSources.CacheDataSource
+import com.example.jokeapp.data.dataSources.cache.CacheDataSource
 import com.example.jokeapp.data.dataSources.database.DataBaseJokeModel
 import com.example.jokeapp.viewmodel.JokeDataCallback
 

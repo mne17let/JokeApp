@@ -1,4 +1,4 @@
-package com.example.jokeapp.data.dataSources
+package com.example.jokeapp.data.dataSources.cache
 
 import com.example.jokeapp.data.Joke
 import com.example.jokeapp.data.api.JokeModelJSON

@@ -1,9 +1,10 @@
-package com.example.jokeapp.data.dataSources
+package com.example.jokeapp.data.dataSources.cache
 
 import com.example.jokeapp.data.Joke
-import com.example.jokeapp.data.StandardJoke
 import com.example.jokeapp.data.UIJoke
 import com.example.jokeapp.data.api.JokeModelJSON
+import com.example.jokeapp.data.dataSources.ErrorType
+import com.example.jokeapp.data.dataSources.cloud.JokeCloudDataSource
 
 class JokeCacheDataSource: CacheDataSource {
 
@@ -27,11 +28,14 @@ class JokeCacheDataSource: CacheDataSource {
         return result
     }
 
-    override fun getJokeFromCache(callback: JokeCachedCallback) {
+    override suspend fun getJokeFromCache(): JokeCloudDataSource.Result {
+        val result: JokeCloudDataSource.Result
         if (list.isEmpty()){
-            callback.cacheError()
+            result = JokeCloudDataSource.Result.Error(ErrorType.NO_CONNECTION)
         } else{
-            callback.cachedSuccessfully(list.random().second)
+            result = JokeCloudDataSource.Result.JokeData(list.random().second)
         }
+
+        return result
     }
 }

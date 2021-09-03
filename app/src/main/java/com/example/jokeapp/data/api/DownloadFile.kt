@@ -10,7 +10,7 @@ interface OldJokeLoader{
 
 interface RetrofitJokeLoader{
     @GET("https://official-joke-api.appspot.com/random_joke/")
-    fun getJoke(): Call<JokeModelJSON>
+    suspend fun getJoke(): JokeModelJSON
 }
 
 interface DownloadCallback{

@@ -1,8 +1,10 @@
 package com.example.jokeapp.data.repository
 
-interface Repository<S, E> {
+import com.example.jokeapp.data.UIJoke
 
-    fun getJoke()
+interface Repository {
+
+    suspend fun getJoke(): UIJoke
 
     fun start(resultCallback: ResultCallback)
 

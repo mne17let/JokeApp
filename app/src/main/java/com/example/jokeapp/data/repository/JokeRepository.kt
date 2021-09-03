@@ -1,14 +1,17 @@
 package com.example.jokeapp.data.repository
 
 import com.example.jokeapp.data.*
-import com.example.jokeapp.data.api.JokeModelJSON
 import com.example.jokeapp.data.dataSources.*
 import com.example.jokeapp.data.dataSources.ErrorType
+import com.example.jokeapp.data.dataSources.cache.CacheDataSource
+import com.example.jokeapp.data.dataSources.cache.JokeCachedCallback
+import com.example.jokeapp.data.dataSources.cloud.CloudDataSource
+import com.example.jokeapp.data.dataSources.cloud.JokeCloudDataSource
 
 class JokeRepository(private val cloud: CloudDataSource,
                      private val cache: CacheDataSource,
                      private val resourceManager: ErrorResourceManager):
-    Repository<Joke, JokeDownloadError> {
+    Repository {
 
     private var callback: ResultCallback? = null
 
@@ -22,10 +25,28 @@ class JokeRepository(private val cloud: CloudDataSource,
 
     private var cachedJoke: Joke? = null
 
-    override fun getJoke() {
+    override suspend fun getJoke(): UIJoke {
 
         if(getJokesFromCache){
-            cache.getJokeFromCache(object : JokeCachedCallback{
+            val resultJoke: UIJoke
+
+            val resultFromCache = cache.getJokeFromCache()
+
+            when(resultFromCache){
+                is JokeCloudDataSource.Result.JokeData -> {
+                    cachedJoke = resultFromCache.data
+                    resultJoke = resultFromCache.data.toFavouriteJoke()
+                }
+
+                is JokeCloudDataSource.Result.Error -> {
+                    cachedJoke = null
+                    resultJoke = FailedJoke(noCachedJokesError.getErrorMessage())
+                }
+            }
+
+            return resultJoke
+
+            /*cache.getJokeFromCache(object : JokeCachedCallback {
                 override fun cachedSuccessfully(joke: Joke) {
                     callback?.onDownloadEnd(joke.toFavouriteJoke())
                     cachedJoke = joke
@@ -36,9 +57,28 @@ class JokeRepository(private val cloud: CloudDataSource,
                     cachedJoke = null
                 }
 
-            })
+            })*/
         } else{
-            cloud.getJokeFromCloud(object : CloudCallback{
+            val resultJoke: UIJoke
+
+            val resultFromCloud = cloud.getJokeFromCloud()
+
+            when (resultFromCloud){
+                is JokeCloudDataSource.Result.JokeData -> {
+                    val joke = resultFromCloud.data
+                    cachedJoke = joke
+                    resultJoke = joke.toStandardJoke()
+                }
+                is JokeCloudDataSource.Result.Error -> {
+                    cachedJoke = null
+                    val fail = if (resultFromCloud.errorType == ErrorType.NO_CONNECTION) connectionError else serverError
+                    resultJoke = FailedJoke(fail.getErrorMessage())
+                }
+            }
+
+            return resultJoke
+
+            /*cloud.getJokeFromCloud(object : CloudCallback{
 
                 override fun onSuccess(joke: Joke) {
                     cachedJoke = joke
@@ -50,7 +90,7 @@ class JokeRepository(private val cloud: CloudDataSource,
                     val fail = if(errorType == ErrorType.NO_CONNECTION) connectionError else serverError
                     callback?.onDownloadEnd(FailedJoke(fail.getErrorMessage()))
                 }
-            })
+            })*/
         }
 
         /*when(count){

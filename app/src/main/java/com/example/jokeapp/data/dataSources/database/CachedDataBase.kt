@@ -2,9 +2,11 @@ package com.example.jokeapp.data.dataSources.database
 
 import com.example.jokeapp.data.Joke
 import com.example.jokeapp.data.UIJoke
-import com.example.jokeapp.data.api.JokeModelJSON
-import com.example.jokeapp.data.dataSources.CacheDataSource
-import com.example.jokeapp.data.dataSources.JokeCachedCallback
+import com.example.jokeapp.data.dataSources.ErrorType
+import com.example.jokeapp.data.dataSources.cache.CacheDataSource
+import com.example.jokeapp.data.dataSources.cache.JokeCachedCallback
+import com.example.jokeapp.data.dataSources.cloud.CloudDataSource
+import com.example.jokeapp.data.dataSources.cloud.JokeCloudDataSource
 import io.realm.Realm
 import io.realm.RealmResults
 
@@ -42,12 +44,14 @@ class CachedDataBase(private val realm: Realm): CacheDataSource {
         }
     }
 
-    override fun getJokeFromCache(callback: JokeCachedCallback) {
+    override suspend fun getJokeFromCache(): JokeCloudDataSource.Result {
+        val result: JokeCloudDataSource.Result
+
         val jokesFromDataBase: RealmResults<DataBaseJokeModel> = realm
             .where(DataBaseJokeModel::class.java).findAll()
 
         if(jokesFromDataBase.isEmpty()){
-            callback.cacheError()
+            result = JokeCloudDataSource.Result.Error(ErrorType.SERVICE_UNAVAILABLE)
         } else{
             val randomJokeFromDataBase = jokesFromDataBase.random()
             val randomJoke_id = randomJokeFromDataBase.id
@@ -57,9 +61,10 @@ class CachedDataBase(private val realm: Realm): CacheDataSource {
 
             val joke = Joke(randomJoke_id, randomJoke_type, randomJoke_setup, randomJoke_punchline)
 
-            callback.cachedSuccessfully(joke)
+            result = JokeCloudDataSource.Result.JokeData(joke)
         }
 
+        return result
         //realm.close()
     }
 }

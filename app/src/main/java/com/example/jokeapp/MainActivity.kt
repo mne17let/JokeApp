@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import com.example.jokeapp.viewmodel.JokeDataCallback
-import com.example.jokeapp.viewmodel.ViewModel
+import com.example.jokeapp.viewmodel.MyViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var textView: TextView
     private lateinit var checkBox: CheckBox
-    private lateinit var viewModel: ViewModel
+    private lateinit var viewModel: MyViewModel
     private lateinit var likeIconButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
