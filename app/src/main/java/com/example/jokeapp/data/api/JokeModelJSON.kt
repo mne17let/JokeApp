@@ -19,28 +19,5 @@ data class JokeModelJSON(
     @SerializedName("punchline")
     private val punchline: String
 ){
-    fun checkForCache(cacheDataSource: CacheDataSource): Joke{
-        return cacheDataSource.addOrRemove(id, this)
-    }
-
-    fun toStandardJoke(): Joke{
-        return StandardJoke(setup, punchline)
-    }
-
-    fun toFavouriteJoke(): Joke{
-        return FavouriteJoke(setup, punchline)
-    }
-
-    fun toFailedJoke(): Joke{
-        return FailedJoke("Ошибочная шутка")
-    }
-
-    fun toRealmJoke(): DataBaseJokeModel{
-        return DataBaseJokeModel().also {
-            it.id = id
-            it.type = type
-            it.setup = setup
-            it.punchline = punchline
-        }
-    }
+    fun toJoke() = Joke(id, type, setup, punchline)
 }

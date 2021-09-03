@@ -1,6 +1,7 @@
 package com.example.jokeapp.data.dataSources.database
 
 import com.example.jokeapp.data.Joke
+import com.example.jokeapp.data.UIJoke
 import com.example.jokeapp.data.api.JokeModelJSON
 import com.example.jokeapp.data.dataSources.CacheDataSource
 import com.example.jokeapp.data.dataSources.JokeCachedCallback
@@ -8,11 +9,11 @@ import io.realm.Realm
 import io.realm.RealmResults
 
 class CachedDataBase(private val realm: Realm): CacheDataSource {
-    override fun addOrRemove(id: Int, jokeModelJSON: JokeModelJSON): Joke {
+    override fun addOrRemove(id: Int, joke: Joke): UIJoke {
         val alreadyExistsJoke: DataBaseJokeModel? = realm.where(DataBaseJokeModel::class.java).equalTo("id", id).findFirst()
 
         if(alreadyExistsJoke == null){
-            val newJokeForDataBaseCache: DataBaseJokeModel = jokeModelJSON.toRealmJoke()
+            val newJokeForDataBaseCache: DataBaseJokeModel = joke.toRealmJoke()
 
             val transaction = object : Realm.Transaction{
                 override fun execute(realm: Realm) {
@@ -24,7 +25,7 @@ class CachedDataBase(private val realm: Realm): CacheDataSource {
             realm.executeTransactionAsync(transaction)
             //realm.close()
 
-            return jokeModelJSON.toFavouriteJoke()
+            return joke.toFavouriteJoke()
         } else{
             val transaction = object : Realm.Transaction{
                 override fun execute(realm: Realm) {
@@ -37,7 +38,7 @@ class CachedDataBase(private val realm: Realm): CacheDataSource {
             realm.executeTransactionAsync(transaction)
             //realm.close()
 
-            return jokeModelJSON.toStandardJoke()
+            return joke.toStandardJoke()
         }
     }
 
@@ -54,9 +55,9 @@ class CachedDataBase(private val realm: Realm): CacheDataSource {
             val randomJoke_setup = randomJokeFromDataBase.setup
             val randomJoke_punchline = randomJokeFromDataBase.punchline
 
-            val jokeModelJSON = JokeModelJSON(randomJoke_id, randomJoke_type, randomJoke_setup, randomJoke_punchline)
+            val joke = Joke(randomJoke_id, randomJoke_type, randomJoke_setup, randomJoke_punchline)
 
-            callback.cachedSuccessfully(jokeModelJSON)
+            callback.cachedSuccessfully(joke)
         }
 
         //realm.close()

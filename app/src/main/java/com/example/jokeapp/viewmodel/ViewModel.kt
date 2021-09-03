@@ -31,7 +31,7 @@ class ViewModel(private val repository: JokeRepository) {
 
     private fun getResultCallback(): ResultCallback {
         val newResultCallback = object : ResultCallback {
-            override fun onDownloadEnd(data: Joke) {
+            override fun onDownloadEnd(data: UIJoke) {
                 jokeDataCallback?.let {
                     data.doMap(it)
                 }

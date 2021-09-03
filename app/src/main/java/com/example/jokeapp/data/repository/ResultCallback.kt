@@ -1,6 +1,7 @@
 package com.example.jokeapp.data.repository
 
 import com.example.jokeapp.data.Joke
+import com.example.jokeapp.data.UIJoke
 
 /*interface ResultCallback<S, E> {
 
@@ -10,5 +11,5 @@ import com.example.jokeapp.data.Joke
 }*/
 
 interface ResultCallback{
-    fun onDownloadEnd(data: Joke)
+    fun onDownloadEnd(data: UIJoke)
 }

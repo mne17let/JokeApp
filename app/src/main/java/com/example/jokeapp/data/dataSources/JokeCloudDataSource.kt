@@ -11,7 +11,7 @@ class JokeCloudDataSource(private val loader: RetrofitJokeLoader): CloudDataSour
         loader.getJoke().enqueue(object : retrofit2.Callback<JokeModelJSON>{
             override fun onResponse(call: Call<JokeModelJSON>, response: Response<JokeModelJSON>) {
                 if(response.isSuccessful){
-                    callback.onSuccess(response.body()!!)
+                    callback.onSuccess(response.body()!!.toJoke())
                 } else{
                     callback.onError(ErrorType.SERVICE_UNAVAILABLE)
                 }

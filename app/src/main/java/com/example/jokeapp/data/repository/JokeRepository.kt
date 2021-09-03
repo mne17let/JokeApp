@@ -20,33 +20,33 @@ class JokeRepository(private val cloud: CloudDataSource,
     private val serverError = ServerError(resourceManager)
     private val noCachedJokesError = NoFavouriteJokeError(resourceManager)
 
-    private var cachedJokeModelJSON: JokeModelJSON? = null
+    private var cachedJoke: Joke? = null
 
     override fun getJoke() {
 
         if(getJokesFromCache){
             cache.getJokeFromCache(object : JokeCachedCallback{
-                override fun cachedSuccessfully(jokeModelJSON: JokeModelJSON) {
-                    callback?.onDownloadEnd(jokeModelJSON.toFavouriteJoke())
-                    cachedJokeModelJSON = jokeModelJSON
+                override fun cachedSuccessfully(joke: Joke) {
+                    callback?.onDownloadEnd(joke.toFavouriteJoke())
+                    cachedJoke = joke
                 }
 
                 override fun cacheError() {
                     callback?.onDownloadEnd(FailedJoke(noCachedJokesError.getErrorMessage()))
-                    cachedJokeModelJSON = null
+                    cachedJoke = null
                 }
 
             })
         } else{
             cloud.getJokeFromCloud(object : CloudCallback{
 
-                override fun onSuccess(jsonJoke: JokeModelJSON) {
-                    cachedJokeModelJSON = jsonJoke
-                    callback?.onDownloadEnd(jsonJoke.toStandardJoke())
+                override fun onSuccess(joke: Joke) {
+                    cachedJoke = joke
+                    callback?.onDownloadEnd(joke.toStandardJoke())
                 }
 
                 override fun onError(errorType: ErrorType) {
-                    cachedJokeModelJSON = null
+                    cachedJoke = null
                     val fail = if(errorType == ErrorType.NO_CONNECTION) connectionError else serverError
                     callback?.onDownloadEnd(FailedJoke(fail.getErrorMessage()))
                 }
@@ -99,9 +99,9 @@ class JokeRepository(private val cloud: CloudDataSource,
     }
 
     fun changeJokeStatus(callback: ResultCallback){
-        val newJoke: Joke? = cachedJokeModelJSON?.checkForCache(cache)
-        if (newJoke != null) {
-            callback.onDownloadEnd(newJoke)
+        val newJokeForUI: UIJoke? = cachedJoke?.checkForCache(cache)
+        if (newJokeForUI != null) {
+            callback.onDownloadEnd(newJokeForUI)
         }
     }
 
