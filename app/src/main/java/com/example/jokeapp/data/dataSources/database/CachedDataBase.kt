@@ -9,39 +9,51 @@ import com.example.jokeapp.data.dataSources.cloud.CloudDataSource
 import com.example.jokeapp.data.dataSources.cloud.JokeCloudDataSource
 import io.realm.Realm
 import io.realm.RealmResults
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CachedDataBase(private val realm: Realm): CacheDataSource {
-    override fun addOrRemove(id: Int, joke: Joke): UIJoke {
-        val alreadyExistsJoke: DataBaseJokeModel? = realm.where(DataBaseJokeModel::class.java).equalTo("id", id).findFirst()
+    override suspend fun addOrRemove(id: Int, joke: Joke): UIJoke {
 
-        if(alreadyExistsJoke == null){
-            val newJokeForDataBaseCache: DataBaseJokeModel = joke.toRealmJoke()
+        val resultJoke: UIJoke
 
-            val transaction = object : Realm.Transaction{
-                override fun execute(realm: Realm) {
-                    realm.insert(newJokeForDataBaseCache)
+        withContext(Dispatchers.IO){
+
+            val realmInstance = Realm.getDefaultInstance()
+            val alreadyExistsJoke: DataBaseJokeModel? = realmInstance.where(DataBaseJokeModel::class.java).equalTo("id", id).findFirst()
+
+            if(alreadyExistsJoke == null){
+                val newJokeForDataBaseCache: DataBaseJokeModel = joke.toRealmJoke()
+
+                val transaction = object : Realm.Transaction{
+                    override fun execute(realm: Realm) {
+                        realm.insert(newJokeForDataBaseCache)
+                    }
+
                 }
 
-            }
+                realmInstance.executeTransaction(transaction)
+                //realm.close()
 
-            realm.executeTransactionAsync(transaction)
-            //realm.close()
-
-            return joke.toFavouriteJoke()
-        } else{
-            val transaction = object : Realm.Transaction{
-                override fun execute(realm: Realm) {
-                    val alreadyExistsJokeForNewThread =
-                        realm.where(DataBaseJokeModel::class.java).equalTo("id", id).findFirst()
-                    alreadyExistsJokeForNewThread?.deleteFromRealm()
+                resultJoke = joke.toFavouriteJoke()
+            } else{
+                val transaction = object : Realm.Transaction{
+                    override fun execute(realm: Realm) {
+                        val alreadyExistsJokeForNewThread =
+                            realmInstance.where(DataBaseJokeModel::class.java).equalTo("id", id).findFirst()
+                        alreadyExistsJokeForNewThread?.deleteFromRealm()
+                    }
                 }
+
+                realmInstance.executeTransaction(transaction)
+                //realm.close()
+
+                resultJoke = joke.toStandardJoke()
             }
-
-            realm.executeTransactionAsync(transaction)
-            //realm.close()
-
-            return joke.toStandardJoke()
         }
+
+        return resultJoke
     }
 
     override suspend fun getJokeFromCache(): JokeCloudDataSource.Result {

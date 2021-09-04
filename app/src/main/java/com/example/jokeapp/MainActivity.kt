@@ -54,7 +54,9 @@ class MainActivity : AppCompatActivity() {
     fun startViewModel(){
         val textCallback = object : JokeDataCallback {
             override fun updateText(text: String) {
-                doOnUiThread(text)
+                button.isEnabled = true
+                progressBar.visibility = View.INVISIBLE
+                textView.text = text
             }
 
             override fun updateIcon(iconId: Int) {

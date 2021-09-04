@@ -12,7 +12,7 @@ class JokeCacheDataSource: CacheDataSource {
 
     private val map = HashMap<Int, JokeModelJSON>()
 
-    override fun addOrRemove(id: Int, joke: Joke): UIJoke {
+    override suspend fun addOrRemove(id: Int, joke: Joke): UIJoke {
         val found = list.find {
             it.first == id
         }

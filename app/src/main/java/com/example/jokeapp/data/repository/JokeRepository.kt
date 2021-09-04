@@ -138,11 +138,12 @@ class JokeRepository(private val cloud: CloudDataSource,
         })*/
     }
 
-    fun changeJokeStatus(callback: ResultCallback){
+    suspend fun changeJokeStatus(): UIJoke?{
         val newJokeForUI: UIJoke? = cachedJoke?.checkForCache(cache)
-        if (newJokeForUI != null) {
+        /*if (newJokeForUI != null) {
             callback.onDownloadEnd(newJokeForUI)
-        }
+        }*/
+        return newJokeForUI
     }
 
     fun changeDataSource(isFavouriteJoke: Boolean){

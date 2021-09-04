@@ -5,7 +5,7 @@ import com.example.jokeapp.data.UIJoke
 import com.example.jokeapp.data.dataSources.cloud.JokeCloudDataSource
 
 interface CacheDataSource {
-    fun addOrRemove(id: Int, joke: Joke): UIJoke
+    suspend fun addOrRemove(id: Int, joke: Joke): UIJoke
 
     suspend fun getJokeFromCache(): JokeCloudDataSource.Result
 }

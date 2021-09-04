@@ -11,7 +11,7 @@ class Joke(private val id: Int,
            private val setup: String,
            private val punchline: String) {
 
-    fun checkForCache(cacheDataSource: CacheDataSource): UIJoke{
+    suspend fun checkForCache(cacheDataSource: CacheDataSource): UIJoke{
         return cacheDataSource.addOrRemove(id, this)
     }
 
