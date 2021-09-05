@@ -9,18 +9,19 @@ import com.example.jokeapp.data.dataSources.cloud.CloudDataSource
 import com.example.jokeapp.data.dataSources.cloud.JokeCloudDataSource
 import io.realm.Realm
 import io.realm.RealmResults
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CachedDataBase(private val realm: Realm): CacheDataSource {
+class CachedDataBase(private val realmProvider: RealmProvider): CacheDataSource {
     override suspend fun addOrRemove(id: Int, joke: Joke): UIJoke {
 
         val resultJoke: UIJoke
 
         withContext(Dispatchers.IO){
 
-            val realmInstance = Realm.getDefaultInstance()
+            val realmInstance = realmProvider.getCurrentDataBase()
             val alreadyExistsJoke: DataBaseJokeModel? = realmInstance.where(DataBaseJokeModel::class.java).equalTo("id", id).findFirst()
 
             if(alreadyExistsJoke == null){
@@ -59,7 +60,8 @@ class CachedDataBase(private val realm: Realm): CacheDataSource {
     override suspend fun getJokeFromCache(): JokeCloudDataSource.Result {
         val result: JokeCloudDataSource.Result
 
-        val jokesFromDataBase: RealmResults<DataBaseJokeModel> = realm
+        val jokesFromDataBase: RealmResults<DataBaseJokeModel> = realmProvider
+            .getCurrentDataBase()
             .where(DataBaseJokeModel::class.java).findAll()
 
         if(jokesFromDataBase.isEmpty()){
